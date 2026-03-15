@@ -31,3 +31,43 @@ trainData = X(trainIdx, :);
 testData  = X(testIdx, :);
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Evaluate the base data authentication success/failure rate
+
+%EER
+
+%FAR
+
+%FRR
+
+%Authentication accuracy
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Keystroke Authenication Success / Failure
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Apply Latency / controlled delay model
+
+%Latency
+
+%Jitter
+
+%Packet Loss
+
+%Store Latency dataset
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Evaluate the latency data authentication success/failure rate
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Compare base data to latency data
+
+
+%Euclidean Distance
+
+
+%Plot accuracy vs latency
