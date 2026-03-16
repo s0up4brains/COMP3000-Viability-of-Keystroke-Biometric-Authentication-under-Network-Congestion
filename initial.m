@@ -30,20 +30,28 @@ trainData = X(trainIdx, :);
 % % Testing Dataset - Last 200 password entries per user
 testData  = X(testIdx, :);
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% User typing templates
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Keystroke Authenication for test samples using Euclidean disatnce Success / Failure
+
+% Declare authentication threshold
+
+
+%output success / failure
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Evaluate the base data authentication success/failure rate
+%Evaluate the base data FAR FRR EER accuracy
 
-%EER
 
 %FAR
 
 %FRR
 
-%Authentication accuracy
+%accuracy
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Keystroke Authenication Success / Failure
+% Find EER
 
 
 
@@ -51,23 +59,34 @@ testData  = X(testIdx, :);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Apply Latency / controlled delay model
 
+% for loop (i)
+
 %Latency
 
 %Jitter
 
 %Packet Loss
 
-%Store Latency dataset
+
+%Store (i) modified Latency dataset
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Evaluate the latency data authentication success/failure rate
+%Evaluate the modified latency data FAR FRR EER accuracy
 
+%FAR
+
+%FRR
+
+%accuracy
+
+% Find EER
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Compare base data to latency data
+%Compare base vs modified latency results
 
-
-%Euclidean Distance
+%compare accuracy
+%compare FAR
+%compare FRR
 
 
 %Plot accuracy vs latency
