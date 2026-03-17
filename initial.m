@@ -31,7 +31,12 @@ trainData = X(trainIdx, :);
 testData  = X(testIdx, :);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% User typing templates
+% User typing profile 
+% Mean value of each users key-up key-down times
+
+for i = 1:splitSize
+    userTypingProfile(i, :) = mean(trainData{i, :}, 1);    
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Keystroke Authenication for test samples using Euclidean disatnce Success / Failure
@@ -54,10 +59,10 @@ testData  = X(testIdx, :);
 % Find EER
 
 
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Apply Latency / controlled delay model
+
+% timings for different countries OR Random timings
 
 % for loop (i)
 
@@ -69,6 +74,8 @@ testData  = X(testIdx, :);
 
 
 %Store (i) modified Latency dataset
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Evaluate the modified latency data FAR FRR EER accuracy
