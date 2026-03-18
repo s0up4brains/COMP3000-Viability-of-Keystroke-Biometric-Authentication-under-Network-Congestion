@@ -34,17 +34,28 @@ testData  = X(testIdx, :);
 % User typing profile 
 % Mean value of each users key-up key-down times
 
-for i = 1:splitSize
-    userTypingProfile(i, :) = mean(trainData{i, :}, 1);    
+for i = 1:51 %iterate trough all 51 users
+    startIdx = (i-1)*splitSize + 1;
+    endIdx = i*splitSize;
+     
+    userData = trainData(startIdx:endIdx, :);
+    userArray = table2array(userData);
+    
+    userTypingProfile(i, :) = mean(userArray, 1);    
+ 
+
+
 end
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Keystroke Authenication for test samples using Euclidean disatnce Success / Failure
 
-% Declare authentication threshold
 
 
 %output success / failure
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Evaluate the base data FAR FRR EER accuracy
