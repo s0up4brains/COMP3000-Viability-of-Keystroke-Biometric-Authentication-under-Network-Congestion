@@ -53,32 +53,89 @@ testArray = table2array(testData);
 % Keystroke Authenication for test samples using Euclidean disatnce Success / Failure
 
 %Initialise 
-threshold = 0.7; 
+threshold = 1.0; 
 output = []; 
+distancesPlot = [];
 
+
+% Euclidean Distance of all Users
 for u = 1:numUsers
     
     startIdx = (u-1)*splitSize + 1;
     endIdx   = u*splitSize;
-    
+   
     currentTemplate = trainArrayMeans(u, :);
     
     for j = startIdx:endIdx
-        
+
         testSample = testArray(j, :);
         
-        % Euclidean distance
+        % Euclidean distance Equation
         dist = sqrt(sum((testSample - currentTemplate).^2));
         
+        % Store the distance for plotting
+        distancesPlot = [distancesPlot; dist];
+
         % Decision
         if dist < threshold
             output = [output; 1]; % Success
         else
             output = [output; 0]; % Failure
         end
-        
     end
 end
+
+
+%Plot All Users
+figure;
+plot(distancesPlot);
+hold on;
+
+yline(threshold, 'r--', 'Threshold');
+
+for u = 1:numUsers
+    userSection = u * splitSize;
+    xline(userSection, 'k--');
+end
+
+title('Euclidean Distance for Test Samples');
+xlabel('Sample Number');
+ylabel('Distance from Mean');
+grid on;
+
+
+
+%Euclidean Distance of one User
+userToPlot = 1;
+    
+    startIdx = (userToPlot-1)*splitSize + 1;
+    endIdx   = userToPlot*splitSize;
+   
+    currentTemplate = trainArrayMeans(userToPlot, :);
+    userDistance = [];
+    for j = startIdx:endIdx
+
+        testSample = testArray(j, :);
+        
+        % Euclidean distance Equation
+        dist = sqrt(sum((testSample - currentTemplate).^2));
+       
+        % Store the distance for plotting
+        userDistance = [userDistance; dist];
+    end
+
+% Plot one User
+figure;
+plot(userDistance, 'b');
+hold on;
+
+yline(threshold, 'r--', 'Threshold');
+
+title(['Euclidean Distance - User ', num2str(userToPlot)]);
+xlabel('Sample Number');
+ylabel('Distance');
+grid on;
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -89,10 +146,10 @@ end
 
 %FRR
 
+
 %accuracy
 
 % Find EER
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Apply Latency / controlled delay model
