@@ -53,13 +53,16 @@ testArray = table2array(testData);
 % Keystroke Authenication for test samples using Euclidean disatnce Success / Failure
 
 %Initialise 
-threshold = 1.0; 
+
+threshold = 2;
+
 output = []; 
 distancesPlot = [];
+impostorScores = [];
 
 
 % Euclidean Distance of all Users
-for u = 1:numUsers
+for u = 1:numUsers-1
     
     startIdx = (u-1)*splitSize + 1;
     endIdx   = u*splitSize;
@@ -75,6 +78,18 @@ for u = 1:numUsers
         
         % Store the distance for plotting
         distancesPlot = [distancesPlot; dist];
+
+
+
+        for k = 1:numUsers
+            if k ~= u
+                impostorTemplate = trainArrayMeans(k, :);
+                
+                distI = sqrt(sum((testSample - impostorTemplate).^2));
+                impostorScores = [impostorScores; distI];
+            end
+        end
+
 
         % Decision
         if dist < threshold
@@ -141,19 +156,37 @@ grid on;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Evaluate the base data FAR FRR EER accuracy
 
+scores = -[distancesPlot; impostorScores];
+labels = [ones(length(distancesPlot),1); zeros(length(impostorScores),1)];
 
 %FAR
+[FAR, TPR, T, AUC] = perfcurve(labels, scores, 1);
 
 %FRR
+FRR = 1 - TPR;
+
+figure;
+plot(FAR, FRR, 'b', 'LineWidth', 2);
+xlabel('FAR');
+ylabel('FRR');
+title('FAR vs FRR Curve');
+grid on;
+
+% Find EER
+[~, idx] = min(abs(FAR - FRR));
+EER = FAR(idx);
+disp(['EER = ', num2str(EER)]);
 
 
 %accuracy
+accuracy = sum(output == 1) / length(output);
+disp(['Accuracy = ', num2str(accuracy)]);
 
-% Find EER
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Apply Latency / controlled delay model
-
+clear all;
 % timings for different countries OR Random timings
 
 % for loop (i)
@@ -170,15 +203,33 @@ grid on;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Evaluate the modified latency data FAR FRR EER accuracy
+%Evaluate the base data FAR FRR EER accuracy
 
-%FAR
-
-%FRR
-
-%accuracy
-
-% Find EER
+% scores = -[distancesPlot; impostorScores];
+% labels = [ones(length(distancesPlot),1); zeros(length(impostorScores),1)];
+% 
+% %FAR
+% [FAR, TPR, T, AUC] = perfcurve(labels, scores, 1);
+% 
+% %FRR
+% FRR = 1 - TPR;
+% 
+% figure;
+% plot(FAR, FRR, 'b', 'LineWidth', 2);
+% xlabel('FAR');
+% ylabel('FRR');
+% title('FAR vs FRR Curve');
+% grid on;
+% 
+% % Find EER
+% [~, idx] = min(abs(FAR - FRR));
+% EER = FAR(idx);
+% disp(['EER = ', num2str(EER)]);
+% 
+% 
+% %accuracy
+% accuracy = sum(output == 1) / length(output);
+% disp(['Accuracy = ', num2str(accuracy)]);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Compare base vs modified latency results
