@@ -1,4 +1,4 @@
-clear all;
+clear;
 close all;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Define the file paths
@@ -34,6 +34,7 @@ testData  = X(testIdx, :);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % User typing profile 
 % Mean value of each users key-up key-down times
+trainArrayMeans = zeros(51, 31); %Preallocate
 
 for i = 1:numUsers %iterate trough all 51 users
     startIdx = (i-1)*splitSize + 1;
@@ -55,17 +56,18 @@ testArray = table2array(testData);
 %Initialise 
 
 threshold = 2;
-
-output = []; 
-distancesPlot = [];
-impostorScores = [];
+idx = 1;
+imposterIdx = 1;
+output = zeros(10000,1); 
+distancesPlot = zeros(10000,1);
+imposterScores = zeros(500000,1);
 
 
 % Euclidean Distance of all Users
-for u = 1:numUsers-1
+for u = 1:numUsers
     
     startIdx = (u-1)*splitSize + 1;
-    endIdx   = u*splitSize;
+    endIdx = u*splitSize;
    
     currentTemplate = trainArrayMeans(u, :);
     
@@ -77,27 +79,30 @@ for u = 1:numUsers-1
         dist = sqrt(sum((testSample - currentTemplate).^2));
         
         % Store the distance for plotting
-        distancesPlot = [distancesPlot; dist];
-
+        distancesPlot(idx) = dist;
 
 
         for k = 1:numUsers
             if k ~= u
-                impostorTemplate = trainArrayMeans(k, :);
+                imposterTemplate = trainArrayMeans(k, :);
                 
-                distI = sqrt(sum((testSample - impostorTemplate).^2));
-                impostorScores = [impostorScores; distI];
+                distImposter = sqrt(sum((testSample - imposterTemplate).^2));
+                imposterScores(imposterIdx) =  distImposter;
+                imposterIdx = imposterIdx + 1;
             end
         end
 
 
         % Decision
         if dist < threshold
-            output = [output; 1]; % Success
+            output(idx) = 1; % Success
         else
-            output = [output; 0]; % Failure
+            output(idx) = 0; % Failure
         end
+     %Increase iteration
+     idx = idx + 1;
     end
+
 end
 
 
@@ -120,44 +125,47 @@ grid on;
 
 
 
-%Euclidean Distance of one User
-userToPlot = 1;
-    
-    startIdx = (userToPlot-1)*splitSize + 1;
-    endIdx   = userToPlot*splitSize;
-   
-    currentTemplate = trainArrayMeans(userToPlot, :);
-    userDistance = [];
-    for j = startIdx:endIdx
-
-        testSample = testArray(j, :);
-        
-        % Euclidean distance Equation
-        dist = sqrt(sum((testSample - currentTemplate).^2));
-       
-        % Store the distance for plotting
-        userDistance = [userDistance; dist];
-    end
-
-% Plot one User
-figure;
-plot(userDistance, 'b');
-hold on;
-
-yline(threshold, 'r--', 'Threshold');
-
-title(['Euclidean Distance - User ', num2str(userToPlot)]);
-xlabel('Sample Number');
-ylabel('Distance');
-grid on;
+% %Euclidean Distance of one User
+% userToPlot = 1;
+% 
+%     startIdx = (userToPlot-1)*splitSize + 1;
+%     endIdx   = userToPlot*splitSize;
+% 
+%     currentTemplate = trainArrayMeans(userToPlot, :);
+%     idx = 1;
+%     userDistance = zeros(200,1); 
+% 
+%     for j = startIdx:endIdx
+% 
+%         testSample = testArray(j, :);
+% 
+%         % Euclidean distance Equation
+%         dist = sqrt(sum((testSample - currentTemplate).^2));
+% 
+%         % Store the distance for plotting
+%         userDistance(idx) = dist;
+%         idx = idx + 1;
+%     end
+% 
+% % Plot one User
+% figure;
+% plot(userDistance, 'b');
+% hold on;
+% 
+% yline(threshold, 'r--', 'Threshold');
+% 
+% title(['Euclidean Distance - User ', num2str(userToPlot)]);
+% xlabel('Sample Number');
+% ylabel('Distance');
+% grid on;
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Evaluate the base data FAR FRR EER accuracy
 
-scores = -[distancesPlot; impostorScores];
-labels = [ones(length(distancesPlot),1); zeros(length(impostorScores),1)];
+scores = [distancesPlot; imposterScores];
+labels = [ones(length(distancesPlot),1); zeros(length(imposterScores),1)];
 
 %FAR
 [FAR, TPR, T, AUC] = perfcurve(labels, scores, 1);
@@ -186,7 +194,7 @@ disp(['Accuracy = ', num2str(accuracy)]);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Apply Latency / controlled delay model
-clear all;
+
 % timings for different countries OR Random timings
 
 % for loop (i)
@@ -201,12 +209,20 @@ clear all;
 %Store (i) modified Latency dataset
 
 
+%Convert Array back to table
+
+% modifiedDataTable = table([1; 2], {'A'; 'B'}, 'VariableNames', {'ID', 'Label'});
+% 
+% % Save as Modidied Data as CSV table
+% saveDirectoryPath = 'data\';
+% fullFilePath = fullfile(saveDirectoryPath, 'modifiedDataTable.csv');
+% writetable(modifiedDataTable, fullFilePath);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Evaluate the base data FAR FRR EER accuracy
 
-% scores = -[distancesPlot; impostorScores];
-% labels = [ones(length(distancesPlot),1); zeros(length(impostorScores),1)];
+% scores = -[distancesPlot; imposterScores];
+% labels = [ones(length(distancesPlot),1); zeros(length(imposterScores),1)];
 % 
 % %FAR
 % [FAR, TPR, T, AUC] = perfcurve(labels, scores, 1);
