@@ -286,58 +286,122 @@ for L = 1:numLevels
     [~, idxEER] = min(abs(FAR_network - FRR_network));
     EERResults(L) = FAR_network(idxEER);
 
-%Jitter
+    % Network Accuracy Confusion Matrix
+    TP = sum(genuineScores < threshold);
+    FN = sum(genuineScores >= threshold);
+    FP = sum(imposterScores < threshold);
+    TN = sum(imposterScores >= threshold);
 
-%Packet Loss
+    accuracyResults(L) = ((TP/(TP+FN)) + (TN/(TN+FP))) / 2;
+
+    disp(['Latency Level ', num2str(L), ' | Accuracy = ', num2str(accuracyResults(L)*100), '% | EER = ', num2str(EERResults(L))]);
+
+end
 
 
-%Store (i) modified Latency dataset
+cutoffIdx = find(EERResults > 0.3, 1);
+cutoffLatency = cutoffIdx;
 
-
-%Convert Array back to table
-
-% modifiedDataTable = table([1; 2], {'A'; 'B'}, 'VariableNames', {'ID', 'Label'});
-% 
-% % Save as Modidied Data as CSV table
-% saveDirectoryPath = 'data\';
-% fullFilePath = fullfile(saveDirectoryPath, 'modifiedDataTable.csv');
-% writetable(modifiedDataTable, fullFilePath);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Evaluate the base data FAR FRR EER accuracy
 
-% scores = -[distancesPlot; imposterScores];
-% labels = [ones(length(distancesPlot),1); zeros(length(imposterScores),1)];
-% 
-% %FAR
-% [FAR, TPR, T, AUC] = perfcurve(labels, scores, 1);
-% 
-% %FRR
-% FRR = 1 - TPR;
-% 
-% figure;
-% plot(FAR, FRR, 'b', 'LineWidth', 2);
-% xlabel('FAR');
-% ylabel('FRR');
-% title('FAR vs FRR Curve');
-% grid on;
-% 
-% % Find EER
-% [~, idx] = min(abs(FAR - FRR));
-% EER = FAR(idx);
-% disp(['EER = ', num2str(EER)]);
-% 
-% 
-% %accuracy
-% accuracy = sum(output == 1) / length(output);
-% disp(['Accuracy = ', num2str(accuracy)]);
+% %Convert modified array to table
+modifiedDataTable = array2table(latencyData);
+
+% Save as Modidied Data as CSV table
+saveDirectoryPath = 'data\';
+fullFilePath = fullfile(saveDirectoryPath, 'modifiedDataTable.csv');
+writetable(modifiedDataTable, fullFilePath);
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Compare base vs modified latency results
-
-%compare accuracy
-%compare FAR
-%compare FRR
+% PLOTS
 
 
-%Plot accuracy vs latency
+% Prepare for plotting the accuracy results
+figure;
+plot(1:numLevels, accuracyResults, 'b-o', 'LineWidth', 2);
+hold on;
+plot(1:numLevels, EERResults, 'r-x', 'LineWidth', 2);
+xlabel('Latency Level');
+ylabel('Performance Metrics');
+title('Accuracy and EER across Latency Levels');
+legend('Accuracy', 'EER');
+grid on;
+
+
+%Plot All Users
+figure;
+plot(genuineScores);
+hold on;
+
+yline(threshold, 'r--', 'Threshold');
+yline(cutoffLatency, 'r--', 'Viability Threshold');
+
+for u = 1:numUsers
+    userSection = u * splitSize;
+    xline(userSection, 'k--');
+end
+
+title('Euclidean Distance for Test Samples');
+xlabel('Sample Number');
+ylabel('Distance from Mean');
+grid on;
+
+userToPlot = 1;
+
+startIdx = (userToPlot-1)*splitSize + 1;
+endIdx   = userToPlot*splitSize;
+
+currentTemplate = trainArrayMeans(userToPlot, :);
+idx = 1;
+userDistance = zeros(splitSize,1); 
+
+for j = startIdx:endIdx
+
+    testSample = latencyData(j, :);
+
+        % Euclidean distance Equation
+    dist = sqrt(sum((testSample - currentTemplate).^2));
+
+        % Store the distance for plotting
+    userDistance(idx) = dist;
+    idx = idx + 1;
+end
+
+% Plot one User
+figure;
+plot(userDistance, 'b');
+hold on;
+yline(threshold, 'r--', 'Threshold');
+title(['Euclidean Distance - User ', num2str(userToPlot)]);
+xlabel('Sample Number');
+ylabel('Distance');
+grid on;
+
+
+% Plot FAR vs FRR
+figure;
+plot(FAR_original, FRR_original, 'b', 'LineWidth', 2); hold on;
+plot(FAR_network, FRR_network, 'r-', 'LineWidth', 2);
+legend('Original','Network');
+xlabel('FAR'); ylabel('FRR');
+title('FAR vs FRR Comparison');
+grid on;
+
+% Accuracy vs Latency
+figure;
+plot(1:numLevels, accuracyResults, '-o');
+xlabel('Latency Level');
+ylabel('Accuracy');
+title('Accuracy vs Network Latency');
+grid on;
+
+% EER vs Latency
+figure;
+plot(1:numLevels, EERResults, '-o');
+xlabel('Latency Level');
+ylabel('EER');
+title('EER vs Network Latency');
+grid on;
+
