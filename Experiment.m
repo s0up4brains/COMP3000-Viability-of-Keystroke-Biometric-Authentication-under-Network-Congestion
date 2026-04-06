@@ -55,9 +55,8 @@ testArray  = (testArray - mu) ./ sigma;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% User typing profile 
-% Mean value of each users key-up key-down times
-trainArrayMeans = zeros(51, 31); %Preallocate
+% User typing profile: Mean value of each users key-up key-down times
+trainArrayMeans = zeros(numUsers, size(trainArray,2));
 
 for i = 1:numUsers %iterate trough all 51 users
     startIdx = (i-1)*splitSize + 1;
@@ -85,6 +84,9 @@ output = zeros(10000,1);
 distancesPlot = zeros(10000,1);
 imposterScores = zeros(500000,1);
 
+%Preallocate Tables
+genuineScores = zeros(numUsers * splitSize,1);
+imposterScores = zeros(numUsers * splitSize * (numUsers-1),1);
 
 % Euclidean Distance of all Users
 for u = 1:numUsers
