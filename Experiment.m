@@ -62,27 +62,20 @@ for i = 1:numUsers %iterate trough all 51 users
     startIdx = (i-1)*splitSize + 1;
     endIdx = i*splitSize;
      
-    userData = trainData(startIdx:endIdx, :);
-    trainArray = table2array(userData);
-    
-    trainArrayMeans(i, :) = mean(trainArray, 1);    
- 
+    userData = trainArray(startIdx:endIdx, :);
+    trainArrayMeans(i, :) = mean(userData, 1);
 end
 
-% make test data compatible with trainArrayMeans array
-testArray = table2array(testData);
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Control / Baseline Euclidean
 % Keystroke Authenication for test samples using Euclidean disatnce Success / Failure
 
-%Initialise 
+% Optimum threshold
+threshold = 3.789061255426592;
 
-threshold = 2;
+% indexes
 idx = 1;
 imposterIdx = 1;
-output = zeros(10000,1); 
-distancesPlot = zeros(10000,1);
-imposterScores = zeros(500000,1);
 
 %Preallocate Tables
 genuineScores = zeros(numUsers * splitSize,1);
@@ -93,47 +86,35 @@ for u = 1:numUsers
     
     startIdx = (u-1)*splitSize + 1;
     endIdx = u*splitSize;
+    template = trainArrayMeans(u,:);
    
-    currentTemplate = trainArrayMeans(u, :);
-    
     for j = startIdx:endIdx
-
-        testSample = testArray(j, :);
+        
+        sample = testArray(j,:);
         
         % Euclidean distance Equation
-        dist = sqrt(sum((testSample - currentTemplate).^2));
+        dist = sqrt(sum((sample - template).^2));
         
         % Store the distance for plotting
-        distancesPlot(idx) = dist;
-
+        genuineScores(idx) = dist;
 
         for k = 1:numUsers
             if k ~= u
-                imposterTemplate = trainArrayMeans(k, :);
-                
-                distImposter = sqrt(sum((testSample - imposterTemplate).^2));
-                imposterScores(imposterIdx) =  distImposter;
+                imposterTemplate = trainArrayMeans(k,:);
+                distImposter = sqrt(sum((sample - imposterTemplate).^2));
+                imposterScores(imposterIdx) = distImposter;
                 imposterIdx = imposterIdx + 1;
             end
         end
-
-
-        % Decision
-        if dist < threshold
-            output(idx) = 1; % Success
-        else
-            output(idx) = 0; % Failure
-        end
+        
      %Increase iteration
-     idx = idx + 1;
+        idx = idx + 1;
     end
-
 end
-
 
 %Plot All Users
 figure;
-plot(distancesPlot);
+plot(genuineScores);
 hold on;
 
 yline(threshold, 'r--', 'Threshold');
@@ -151,40 +132,14 @@ grid on;
 
 
 % %Euclidean Distance of one User
-% userToPlot = 1;
-% 
-%     startIdx = (userToPlot-1)*splitSize + 1;
-%     endIdx   = userToPlot*splitSize;
-% 
-%     currentTemplate = trainArrayMeans(userToPlot, :);
-%     idx = 1;
-%     userDistance = zeros(200,1); 
-% 
-%     for j = startIdx:endIdx
-% 
-%         testSample = testArray(j, :);
-% 
-%         % Euclidean distance Equation
-%         dist = sqrt(sum((testSample - currentTemplate).^2));
-% 
-%         % Store the distance for plotting
-%         userDistance(idx) = dist;
-%         idx = idx + 1;
-%     end
-% 
-% % Plot one User
-% figure;
-% plot(userDistance, 'b');
-% hold on;
-% 
-% yline(threshold, 'r--', 'Threshold');
-% 
-% title(['Euclidean Distance - User ', num2str(userToPlot)]);
-% xlabel('Sample Number');
-% ylabel('Distance');
-% grid on;
+userToPlot = 1;
 
+startIdx = (userToPlot-1)*splitSize + 1;
+endIdx   = userToPlot*splitSize;
 
+currentTemplate = trainArrayMeans(userToPlot, :);
+idx = 1;
+userDistance = zeros(splitSize,1); 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Evaluate the base data FAR FRR EER accuracy
