@@ -153,24 +153,44 @@ for j = startIdx:endIdx
     idx = idx + 1;
 end
 
+% Plot one User
 figure;
-plot(FAR, FRR, 'b', 'LineWidth', 2);
-xlabel('FAR');
-ylabel('FRR');
-title('FAR vs FRR Curve');
+plot(userDistance, 'b');
+hold on;
+yline(threshold, 'r--', 'Threshold');
+title(['Euclidean Distance - User ', num2str(userToPlot)]);
+xlabel('Sample Number');
+ylabel('Distance');
 grid on;
 
-% Find EER
-[~, idx] = min(abs(FAR - FRR));
-EER = FAR(idx);
-disp(['EER = ', num2str(EER)]);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Evaluate the base data FAR FRR EER accuracy
+
+% ROC
+scores = -[genuineScores; imposterScores];
+labels = [ones(length(genuineScores),1); zeros(length(imposterScores),1)];
+
+%FAR original
+[FAR_original, TPR, T, AUC] = perfcurve(labels, scores, 1);
+
+%FRR original
+FRR_original = 1 - TPR;
+
+%EER original
+[~, idxEER] = min(abs(FAR_original - FRR_original));
+EER_original = FAR_original(idxEER);
+
+% Accuracy Confusion Matrix
+TP = sum(genuineScores < threshold);
+FN = sum(genuineScores >= threshold);
+FP = sum(imposterScores < threshold);
+TN = sum(imposterScores >= threshold);
+
+accuracy_original = ((TP/(TP+FN)) + (TN/(TN+FP))) / 2;
 
 
-%accuracy
-accuracy = sum(output == 1) / length(output);
-disp(['Accuracy = ', num2str(accuracy)]);
-
-
+disp(['Original Accuracy = ', num2str(accuracy_original * 100), '%']);
+disp(['Original EER = ', num2str(EER_original)]);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Apply Latency / controlled delay model
