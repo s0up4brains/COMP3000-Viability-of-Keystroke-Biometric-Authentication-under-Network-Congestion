@@ -195,7 +195,6 @@ disp(['Original EER = ', num2str(EER_original)]);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Apply Latency / controlled delay model
 
-% timings for different countries OR Random timings
 %Get timings from datset
 latency = timingsTable.latency;
 jitter = timingsTable.jitter;
@@ -203,10 +202,89 @@ packetLoss = timingsTable.packet_loss;
 % throughput = timingsTable.throughput
 % congestion = timingsTable.congestion
 
+numLevels = 10;
+accuracyResults = zeros(numLevels,1);
+EERResults = zeros(numLevels,1);
 
-% for loop (i)
 
-%Latency
+for L = 1:numLevels
+    
+    idxNet = randi(length(latency), size(testArray,1), 1);
+
+    latencySample = latency(idxNet);
+    jitterSample  = jitter(idxNet);
+    lossSample    = packetLoss(idxNet);
+
+    %Scale Latency Values
+    latencyNorm = latencySample / max(latency);
+    jitterNorm  = jitterSample / max(jitter);
+    
+    scale = L * 10;
+    
+    latencyMatrix = repmat(latencyNorm, 1, size(testArray,2));
+    jitterMatrix  = repmat(jitterNorm, 1, size(testArray,2));
+
+    %Latency
+    latencyData = testArray + latencyMatrix * scale * 0.05;
+
+     % jitter 
+    latencyData = latencyData + randn(size(testArray)) .* (jitterMatrix * scale * 0.1);
+
+    % Packet loss 
+    lossMask = rand(size(testArray)) < (lossSample * scale);
+    latencyData(lossMask) = NaN;
+
+    latencyData = fillmissing(latencyData, 'linear');
+    
+    % Euclidean Distance
+    idx = 1;
+    imposterIdx = 1;
+
+    genuineScores = zeros(numUsers * splitSize,1);
+    imposterScores = zeros(numUsers * splitSize * (numUsers-1),1);
+
+    for u = 1:numUsers
+        
+        startIdx = (u-1)*splitSize + 1;
+        endIdx = u*splitSize;
+        template = trainArrayMeans(u,:);
+        
+        for j = startIdx:endIdx
+            
+            sample = latencyData(j,:);
+            
+            dist = sqrt(sum((sample - template).^2));
+            genuineScores(idx) = dist;
+
+            for k = 1:numUsers
+                if k ~= u
+                    imposterTemplate = trainArrayMeans(k,:);
+                    distImposter = sqrt(sum((sample - imposterTemplate).^2));
+                    imposterScores(imposterIdx) = distImposter;
+                    imposterIdx = imposterIdx + 1;
+                end
+            end
+            
+            idx = idx + 1;
+        end
+    end
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Network FAR FRR EER 
+
+    %ROC
+    scores = -[genuineScores; imposterScores];
+    labels = [ones(length(genuineScores),1); zeros(length(imposterScores),1)];
+    
+    % FAR Network
+    [FAR_network, TPR, T, AUC] = perfcurve(labels, scores, 1);
+
+    %FRR Network
+    FRR_network = 1 - TPR;
+
+    %EER Network
+    [~, idxEER] = min(abs(FAR_network - FRR_network));
+    EERResults(L) = FAR_network(idxEER);
 
 %Jitter
 
