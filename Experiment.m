@@ -35,10 +35,24 @@ for i = 1:userSize:n
     testIdx(i+splitSize:i+userSize-1) = true;
 end
 
+
 % % Training Dataset - First 200 password entries per user
 trainData = X(trainIdx, :);
 % % Testing Dataset - Last 200 password entries per user
 testData  = X(testIdx, :);
+
+trainArray = table2array(trainData);
+testArray  = table2array(testData);
+
+% Normalise dataset
+mu = mean(trainArray, 1);
+sigma = std(trainArray, 0, 1);
+
+sigma(sigma == 0) = 1; 
+
+trainArray = (trainArray - mu) ./ sigma;
+testArray  = (testArray - mu) ./ sigma;
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % User typing profile 
