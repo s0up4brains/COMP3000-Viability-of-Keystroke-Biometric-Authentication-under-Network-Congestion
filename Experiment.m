@@ -221,6 +221,13 @@ disp(['Accuracy = ', num2str(accuracy)]);
 %Apply Latency / controlled delay model
 
 % timings for different countries OR Random timings
+%Get timings from datset
+latency = timingsTable.latency;
+jitter = timingsTable.jitter;
+packetLoss = timingsTable.packet_loss;
+% throughput = timingsTable.throughput
+% congestion = timingsTable.congestion
+
 
 % for loop (i)
 
