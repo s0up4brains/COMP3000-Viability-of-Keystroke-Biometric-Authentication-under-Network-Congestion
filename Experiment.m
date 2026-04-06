@@ -2,28 +2,37 @@ clear;
 close all;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Define the file paths
+
+% CMU Dataset
 filePath = 'data\CMUDataOriginal'; 
 %Read the data into a table
 dataTable = readtable(filePath); 
 %Remove first 3 rows
-dataTable(:,[1 2 3]) = [];
+dataTable(:,[1,2,3]) = [];
+
+% Network Timings Dataset
+filePath = 'data\networkDataset\network_dataset'; 
+%Read the data into a table
+timingsTable = readtable(filePath); 
+%Remove rows
+timingsTable(:,[1,8,9,10,11,12,13,14,15]) = [];
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Train and Normalise Data
 
 X = dataTable;
 n = height(X);
 
-userSize = 400; %User sample size
-splitSize = userSize / 2; %Split for train/test
-numUsers = 51;
+userSize = 400; % sample size for each of the 51 users
+splitSize = userSize / 2; %Split userSize in half for train/test
+numUsers = 51; % Users in CMU Dataset
 
 trainIdx = false(n,1);
 testIdx  = false(n,1);
 
 for i = 1:userSize:n
-    trainRange = i:min(i+splitSize-1, n);
-    testRange  = (i+splitSize):min(i+userSize-1, n);
-
-    trainIdx(trainRange) = true;
-    testIdx(testRange) = true;
+    trainIdx(i:i+splitSize-1) = true;
+    testIdx(i+splitSize:i+userSize-1) = true;
 end
 
 % % Training Dataset - First 200 password entries per user
