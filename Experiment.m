@@ -141,17 +141,17 @@ currentTemplate = trainArrayMeans(userToPlot, :);
 idx = 1;
 userDistance = zeros(splitSize,1); 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Evaluate the base data FAR FRR EER accuracy
+for j = startIdx:endIdx
 
-scores = [distancesPlot; imposterScores];
-labels = [ones(length(distancesPlot),1); zeros(length(imposterScores),1)];
+    testSample = testArray(j, :);
 
-%FAR
-[FAR, TPR, T, AUC] = perfcurve(labels, scores, 1);
+    % Euclidean distance Equation
+    dist = sqrt(sum((testSample - currentTemplate).^2));
 
-%FRR
-FRR = 1 - TPR;
+    % Store the distance for plotting
+    userDistance(idx) = dist;
+    idx = idx + 1;
+end
 
 figure;
 plot(FAR, FRR, 'b', 'LineWidth', 2);
