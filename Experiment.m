@@ -124,7 +124,7 @@ for u = 1:numUsers
     xline(userSection, 'k--');
 end
 
-title('Euclidean Distance for Test Samples');
+title('Euclidean Distance of Original Data');
 xlabel('Sample Number');
 ylabel('Distance from Mean');
 grid on;
@@ -158,7 +158,7 @@ figure;
 plot(userDistance, 'b');
 hold on;
 yline(threshold, 'r--', 'Threshold');
-title(['Euclidean Distance - User ', num2str(userToPlot)]);
+title(['Euclidean Distance of Original Data - User ', num2str(userToPlot)]);
 xlabel('Sample Number');
 ylabel('Distance');
 grid on;
@@ -202,7 +202,7 @@ packetLoss = timingsTable.packet_loss;
 % throughput = timingsTable.throughput
 % congestion = timingsTable.congestion
 
-numLevels = 10;
+numLevels = 15;
 accuracyResults = zeros(numLevels,1);
 EERResults = zeros(numLevels,1);
 
@@ -343,7 +343,7 @@ for u = 1:numUsers
     xline(userSection, 'k--');
 end
 
-title('Euclidean Distance for Test Samples');
+title('Euclidean Distance of Network Modified Data');
 xlabel('Sample Number');
 ylabel('Distance from Mean');
 grid on;
@@ -374,7 +374,7 @@ figure;
 plot(userDistance, 'b');
 hold on;
 yline(threshold, 'r--', 'Threshold');
-title(['Euclidean Distance - User ', num2str(userToPlot)]);
+title(['Euclidean Distance of Network Modifed Data - User ', num2str(userToPlot)]);
 xlabel('Sample Number');
 ylabel('Distance');
 grid on;
