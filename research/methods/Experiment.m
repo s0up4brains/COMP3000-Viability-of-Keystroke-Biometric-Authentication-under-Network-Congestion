@@ -17,6 +17,10 @@ timingsTable = readtable(filePath);
 %Remove rows
 timingsTable(:,[1,8,9,10,11,12,13,14,15]) = [];
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Graph Svae lcaotion filepath
+graphFilePath = 'research\figures';
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Train and Normalise Data
 
@@ -128,6 +132,8 @@ title('Euclidean Distance of Original Data');
 xlabel('Sample Number');
 ylabel('Distance from Mean');
 grid on;
+filename = 'EuclideanDistanceOfOriginalData' ; 
+saveas(gca, fullfile(graphFilePath, filename), 'jpeg');
 
 
 
@@ -162,7 +168,8 @@ title(['Euclidean Distance of Original Data - User ', num2str(userToPlot)]);
 xlabel('Sample Number');
 ylabel('Distance');
 grid on;
-
+filename = 'EuclideanDistanceOfOriginalDataSingleUser' ; 
+saveas(gca, fullfile(graphFilePath, filename), 'jpeg');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Evaluate the base data FAR FRR EER accuracy
 
@@ -328,6 +335,8 @@ ylabel('Performance Metrics');
 title('Accuracy and EER across Latency Levels');
 legend('Accuracy', 'EER');
 grid on;
+filename = 'AccuracyEERacrossLatencyLevels' ; 
+saveas(gca, fullfile(graphFilePath, filename), 'jpeg');
 
 
 %Plot All Users
@@ -347,6 +356,8 @@ title('Euclidean Distance of Network Modified Data');
 xlabel('Sample Number');
 ylabel('Distance from Mean');
 grid on;
+filename = 'EuclideanDistanceNetworkModifiedData' ; 
+saveas(gca, fullfile(graphFilePath, filename), 'jpeg');
 
 userToPlot = 1;
 
@@ -378,6 +389,8 @@ title(['Euclidean Distance of Network Modifed Data - User ', num2str(userToPlot)
 xlabel('Sample Number');
 ylabel('Distance');
 grid on;
+filename = 'EuclideanDistanceNetworkModifiedDataSignleUSer' ; 
+saveas(gca, fullfile(graphFilePath, filename), 'jpeg');
 
 
 % Plot FAR vs FRR
@@ -388,6 +401,8 @@ legend('Original','Network');
 xlabel('FAR'); ylabel('FRR');
 title('FAR vs FRR Comparison');
 grid on;
+filename = 'FARFRRComparison' ; 
+saveas(gca, fullfile(graphFilePath, filename), 'jpeg');
 
 % Accuracy vs Latency
 figure;
@@ -396,6 +411,8 @@ xlabel('Latency Level');
 ylabel('Accuracy');
 title('Accuracy vs Network Latency');
 grid on;
+filename = 'AccuracyNetworkLatency' ; 
+saveas(gca, fullfile(graphFilePath, filename), 'jpeg');
 
 % EER vs Latency
 figure;
@@ -404,4 +421,6 @@ xlabel('Latency Level');
 ylabel('EER');
 title('EER vs Network Latency');
 grid on;
+filename = 'EERNetworkLatency' ; 
+saveas(gca, fullfile(graphFilePath, filename), 'jpeg');
 
