@@ -238,7 +238,14 @@ for L = 1:numLevels
     latencyData = latencyData + randn(size(testArray)) .* (jitterMatrix * scale * 0.1);
 
     % Packet loss 
-    lossMask = rand(size(testArray)) < (lossSample * scale);
+    % lossMask = rand(size(testArray)) < (lossSample * scale);
+    % latencyData(lossMask) = NaN;
+
+    % Packet loss
+    lossProb = lossSample / 100;
+    lossMatrix = repmat(lossProb, 1, size(testArray,2));
+    lossProbScaled = 1 - (1 - lossMatrix).^(scale * 0.05);
+    lossMask = rand(size(testArray)) < lossProbScaled;
     latencyData(lossMask) = NaN;
 
     latencyData = fillmissing(latencyData, 'linear');
@@ -407,20 +414,20 @@ saveas(gca, fullfile(graphFilePath, filename), 'jpeg');
 % Accuracy vs Latency
 figure;
 plot(1:numLevels, accuracyResults, '-o');
-xlabel('Latency Level');
+xlabel('Network Degraadtion Level');
 ylabel('Accuracy');
-title('Accuracy vs Network Latency');
+title('Accuracy vs Network Degradation');
 grid on;
-filename = 'AccuracyNetworkLatency' ; 
+filename = 'AccuracyNetworkDegraadtion' ; 
 saveas(gca, fullfile(graphFilePath, filename), 'jpeg');
 
 % EER vs Latency
 figure;
 plot(1:numLevels, EERResults, '-o');
-xlabel('Latency Level');
+xlabel('Network Degraadtion Level');
 ylabel('EER');
-title('EER vs Network Latency');
+title('EER vs Network Degraadtion');
 grid on;
-filename = 'EERNetworkLatency' ; 
+filename = 'EERNetworkDegraadtion' ; 
 saveas(gca, fullfile(graphFilePath, filename), 'jpeg');
 
