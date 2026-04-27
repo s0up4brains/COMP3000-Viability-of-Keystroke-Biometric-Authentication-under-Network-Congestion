@@ -205,7 +205,15 @@ disp(['Original EER = ', num2str(EER_original)]);
 
 avgEuclidean_base = mean(genuineScores);
 disp(['Baseline Avg Euclidean Distance = ', num2str(avgEuclidean_base)]);
+avgImposter_base = mean(imposterScores);
+disp(['Baseline Avg Imposter Distance = ', num2str(avgImposter_base)]);
 
+
+separation = avgImposter_base - avgEuclidean_base;
+
+separationNorm = separation / std(genuineScores);
+
+disp(['Baseline separation  ', num2str(separation)  ' | Baseline separationNorm = ', num2str(separationNorm)]);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -314,9 +322,9 @@ for L = 1:numLevels
     % Averages
     avgEuclidean(L) = totalDist / count;
     avgImposter(L) = mean(imposterScores);
-    seperation(L) = avgImposter(L) - avgEuclidean(L);
+    separation(L) = avgImposter(L) - avgEuclidean(L);
 
-    seperationNorm(L) = seperation(L) / std(genuineScores);
+    separationNorm(L) = separation(L) / std(genuineScores);
 
     avgLatency(L) = mean(Ls(:));
     avgJitter(L) = mean(abs(Js(:)));
@@ -347,8 +355,8 @@ for L = 1:numLevels
 
     accuracyResults(L) = ((TP/(TP+FN)) + (TN/(TN+FP))) / 2;
 
-    disp(['Degradation Level ', num2str(L), ' | Balanced Accuracy = ', num2str(accuracyResults(L)*100), '% | EER = ', num2str(EERResults(L)),' | Average Euclidean = ', num2str(avgEuclidean(L)), ' | Average Imposter Eucldiean = ',num2str(avgImposter(L)), ' | Average Latency = ',num2str(avgLatency(L)), ' | Average Jitter = ',num2str(avgJitter(L)), ' | Average Packet Loss = ', num2str(avgPacketLoss(L))]);
-    disp(['seperation  ', num2str(seperation(L))  ' | seperationNorm = ', num2str(seperationNorm(L))]);
+    disp(['Degradation Level ', num2str(L), ' | Balanced Accuracy = ', num2str(accuracyResults(L)*100), '% | EER = ', num2str(EERResults(L)),' | Average Euclidean = ', num2str(avgEuclidean(L)), ' | Average Imposter Euclidean = ',num2str(avgImposter(L)), ' | Average Latency = ',num2str(avgLatency(L)), ' | Average Jitter = ',num2str(avgJitter(L)), ' | Average Packet Loss = ', num2str(avgPacketLoss(L)*100), '%']);
+    disp(['separation  ', num2str(separation(L))  ' | separationNorm = ', num2str(separationNorm(L))]);
 
 end
 
@@ -377,12 +385,12 @@ figure;
 plot(1:numLevels, accuracyResults, 'b-o', 'LineWidth', 2);
 hold on;
 plot(1:numLevels, EERResults, 'r-x', 'LineWidth', 2);
-xlabel('Latency Level');
+xlabel('Degradation Level');
 ylabel('Performance Metrics');
-title('Balanced Accuracy and EER across Latency Levels');
+title('Balanced Accuracy and EER across Degradation Levels');
 legend('Balanced Accuracy', 'EER');
 grid on;
-filename = 'AccuracyEERacrossLatencyLevels' ; 
+filename = 'AccuracyEERacrossDegradationLevels' ; 
 saveas(gca, fullfile(graphFilePath, filename), 'jpeg');
 
 
@@ -454,33 +462,33 @@ saveas(gca, fullfile(graphFilePath, filename), 'jpeg');
 % EER vs Degradation
 figure;
 plot(1:numLevels, EERResults, '-o');
-xlabel('Network Degraadtion Level');
+xlabel('Network Degradation Level');
 ylabel('EER');
 title('EER vs Network Degradtion');
 grid on;
-filename = 'EERNetworkDegraadtion' ; 
+filename = 'EERNetworkDegradation' ; 
 saveas(gca, fullfile(graphFilePath, filename), 'jpeg');
 
 
-%Genuine vs Imposters OR seperation
+%Genuine vs Imposters OR separation
 figure;
 plot(1:numLevels, avgEuclidean, '-o', 'LineWidth', 2); hold on;
 plot(1:numLevels, avgImposter, '-o', 'LineWidth', 2); hold on;
 xlabel('Degradation Level');
 ylabel('Mean Euclidean Distance');
 legend('Genuine User Distances', 'Imposter User Distance');
-title('Eucldiean Distributions under Network Degradation');
+title('Euclidean Distributions under Network Degradation');
 grid on;
-filename = 'EucldieanDistributionsunderNetworkDegradation' ; 
+filename = 'EuclideanDistributionsunderNetworkDegradation' ; 
 saveas(gca, fullfile(graphFilePath, filename), 'jpeg');
 
 figure;
-plot(1:numLevels, seperation, '-o', 'LineWidth', 2);
+plot(1:numLevels, separation, '-o', 'LineWidth', 2);
 xlabel('Degradation Level');
-ylabel('Genuine–Impostor seperation');
-title('Eucldiean Seperation vs Network Degradation');
+ylabel('Genuine–Imposter separation');
+title('Euclidean separation vs Network Degradation');
 grid on;
-filename = 'seperation' ; 
+filename = 'separation' ; 
 saveas(gca, fullfile(graphFilePath, filename), 'jpeg');
 
 %Average Network Conditions per Degradation Level
