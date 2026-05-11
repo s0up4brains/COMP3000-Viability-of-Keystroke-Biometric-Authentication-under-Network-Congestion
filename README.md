@@ -10,6 +10,10 @@ Supervisor: Bogdan Ghita
 
 Trello: https://trello.com/b/Iqpg3ydL/sprint-board
 
+CMU Keystroke Dataset: https://www.cs.cmu.edu/\~keystroke/
+
+Network Anomaly Dataset: https://www.kaggle.com/datasets/kaiser14/network-anomaly-dataset
+
 
 
 Project Overview
