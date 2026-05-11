@@ -358,6 +358,11 @@ for L = 1:numLevels
     disp(['Degradation Level ', num2str(L), ' | Balanced Accuracy = ', num2str(accuracyResults(L)*100), '% | EER = ', num2str(EERResults(L)),' | Average Euclidean = ', num2str(avgEuclidean(L)), ' | Average Imposter Euclidean = ',num2str(avgImposter(L)), ' | Average Latency = ',num2str(avgLatency(L)), ' | Average Jitter = ',num2str(avgJitter(L)), ' | Average Packet Loss = ', num2str(avgPacketLoss(L)*100), '%']);
     disp(['separation  ', num2str(separation(L))  ' | separationNorm = ', num2str(separationNorm(L))]);
 
+
+
+    %Store Each level
+    DistortionStore{L} = DistortionData;
+
 end
 
 
@@ -504,3 +509,10 @@ title('Average Network Conditions per Degradation Level');
 grid on;
 filename = 'NetworkConditionsvsDegradation' ; 
 saveas(gca, fullfile(graphFilePath, filename), 'jpeg');
+
+
+
+
+
+
+
